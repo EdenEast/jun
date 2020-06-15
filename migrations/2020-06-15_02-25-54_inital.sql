@@ -4,7 +4,7 @@ create table if not exists profile (
     id uuid default uuid_generate_v4() primary key,
     username varchar not null unique,
     email varchar not null unique,
-    password varchar not null,
+    password_hash varchar not null,
     image varchar null,
     created_at timestamp not null default (now() at time zone 'utc'),
     updated_at timestamp not null default (now() at time zone 'utc')

@@ -33,7 +33,7 @@ impl UserRepository {
                 id: rec.id,
                 username: rec.username,
                 email: rec.email,
-                password: rec.password,
+                password_hash: rec.password_hash,
                 image: rec.image,
                 created_at: rec.created_at,
                 updated_at: rec.updated_at,
@@ -51,7 +51,7 @@ impl UserRepository {
         let user = sqlx::query_as!(
             User,
             r#"
-            insert into profile (username, email, password)
+            insert into profile (username, email, password_hash)
             values ($1, $2, $3)
             returning *"#,
             &input.username,
