@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:12-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: june
+      POSTGRES_USER: june
+      POSTGRES_DB: june
+    ports:
+      - 5432:5432
