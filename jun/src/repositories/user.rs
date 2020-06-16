@@ -3,7 +3,7 @@ use uuid::Uuid;
 use crate::{
     error::Error,
     hash::PasswordHasher,
-    models::{AuthToken, CreateUser, User},
+    models::{AuthToken,AuthUser, CreateUser, User},
     Pool,
 };
 
@@ -47,7 +47,7 @@ impl UserRepository {
         &self,
         input: CreateUser,
         hasher: &PasswordHasher,
-    ) -> Result<AuthToken, Error> {
+    ) -> Result<AuthUser, Error> {
         let hash = hasher.encode(&input.password).await;
 
         let user = sqlx::query_as!(
@@ -74,6 +74,13 @@ impl UserRepository {
         .fetch_one(&self.pool)
         .await?;
 
-        Ok(auth_token)
+        Ok(AuthUser {
+            user_id: user.id,
+            token_id: auth_token.id,
+            token: auth_token.token,
+            username: user.username,
+            email: user.email,
+            image: user.image
+        })
     }
 }

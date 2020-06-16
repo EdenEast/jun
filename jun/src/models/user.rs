@@ -25,6 +25,16 @@ pub struct AuthToken {
     pub updated_at: NaiveDateTime,
 }
 
+#[derive(Debug, Serialize, Deserialize, FromRow, juniper::GraphQLObject)]
+pub struct AuthUser {
+    pub user_id: Uuid,
+    pub token_id: Uuid,
+    pub token: Uuid,
+    pub username: String,
+    pub email: String,
+    pub image: Option<String>,
+}
+
 #[derive(Debug, GraphQLInputObject)]
 pub struct CreateUser {
     pub username: String,

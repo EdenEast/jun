@@ -1,5 +1,5 @@
 use crate::hash::PasswordHasher;
-use crate::models::{AuthToken, CreateUser, User};
+use crate::models::{AuthUser, CreateUser, User};
 use crate::repositories::UserRepository;
 use crate::Pool;
 use juniper::{EmptySubscription, FieldResult, RootNode};
@@ -44,7 +44,7 @@ pub struct Mutation {}
 
 #[juniper::graphql_object(Context = Context)]
 impl Mutation {
-    pub async fn create_user(input: CreateUser, context: &Context) -> FieldResult<AuthToken> {
+    pub async fn create_user(input: CreateUser, context: &Context) -> FieldResult<AuthUser> {
         context
             .user_repository()
             .create(input, &context.pass_hasher)
