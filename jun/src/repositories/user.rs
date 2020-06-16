@@ -1,17 +1,17 @@
-use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::error::Error;
 use crate::hash::PasswordHasher;
 use crate::models::{AuthToken, CreateUser, User};
+use crate::Pool;
 
 pub struct UserRepository {
-    pool: PgPool,
+    pool: Pool,
 }
 
 impl UserRepository {
-    pub fn new(pool: &PgPool) -> Self {
-        Self { pool: pool.clone() }
+    pub fn new(pool: Pool) -> Self {
+        Self { pool }
     }
 
     pub async fn get(&self, id: Uuid) -> Result<User, Error> {

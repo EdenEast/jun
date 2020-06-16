@@ -1,4 +1,5 @@
 use jun::graphql::{create_schema, http, Context, Schema};
+use jun::Pool;
 use tide::Body;
 use tide::Redirect;
 use tide::Server;
@@ -11,9 +12,9 @@ pub struct State {
 }
 
 impl State {
-    pub fn new() -> Self {
+    pub fn new(pool: Pool) -> Self {
         Self {
-            context: Context::new(),
+            context: Context::new(pool),
             schema: create_schema(),
         }
     }
@@ -48,15 +49,22 @@ async fn handle_graphiql(_: Request<State>) -> tide::Result {
 
 #[async_std::main]
 async fn main() -> std::io::Result<()> {
+    use std::env::var;
+
     dotenv::dotenv().ok();
     tide::log::start();
 
-    let host = std::env::var("SERVER_HOST").expect("SERVER_HOST is not part of env");
-    let port = std::env::var("SERVER_PORT").expect("SERVER_PORT is not part of env");
-    let _server_url = std::env::var("SERVER_URL").expect("SERVER_URL is not part of env");
+    let host = var("SERVER_HOST").expect("SERVER_HOST is not part of env");
+    let port = var("SERVER_PORT").expect("SERVER_PORT is not part of env");
+    let _server_url = var("SERVER_URL").expect("SERVER_URL is not part of env");
     let server_addr = format!("{}:{}", host, port);
 
-    let state = State::new();
+    let database_url = var("DATABASE_URL").expect("DATABASE_URL is not part of env");
+    let pool = jun::Pool::new(&database_url)
+        .await
+        .expect(&format!("failed to connect to database: {}", &database_url));
+
+    let state = State::new(pool);
 
     let mut app = Server::with_state(state);
     app.middleware(tide::log::LogMiddleware::new());
