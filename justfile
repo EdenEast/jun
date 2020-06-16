@@ -12,5 +12,5 @@ migrate: setup
     sqlx migrate run
 
 connect: migrate
-    {{mintty_prefix}} docker-compose exec postgres psql -h localhost -p 5432 -U june june
+    {{mintty_prefix}} docker-compose exec postgres psql -h localhost -p 5432 -U jun jun
 

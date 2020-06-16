@@ -1,4 +1,4 @@
-use june::graphql::{create_schema, http, Context, Schema};
+use jun::graphql::{create_schema, http, Context, Schema};
 use tide::Body;
 use tide::Redirect;
 use tide::Server;

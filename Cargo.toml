@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "june",
-    "june-actix",
-    "june-tide",
+    "jun",
+    "jun-actix",
+    "jun-tide",
 ]

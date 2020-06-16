@@ -1,5 +1,5 @@
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
-use june::graphql::{
+use jun::graphql::{
     create_schema, http::graphiql::graphiql_source, http::GraphQLRequest, Context, Schema,
 };
 use log::info;

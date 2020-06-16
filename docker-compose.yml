@@ -4,8 +4,8 @@ services:
     image: postgres:12-alpine
     restart: always
     environment:
-      POSTGRES_PASSWORD: june
-      POSTGRES_USER: june
-      POSTGRES_DB: june
+      POSTGRES_PASSWORD: jun
+      POSTGRES_USER: jun
+      POSTGRES_DB: jun
     ports:
       - 5432:5432
