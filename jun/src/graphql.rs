@@ -2,6 +2,7 @@ use crate::hash::PasswordHasher;
 use crate::models::{AuthUser, CreateUser, User};
 use crate::repositories::UserRepository;
 use crate::Pool;
+use uuid::Uuid;
 use juniper::{EmptySubscription, FieldResult, RootNode};
 
 // re-exports
@@ -33,6 +34,10 @@ pub struct Query;
 impl Query {
     fn api_version() -> &str {
         "1.0"
+    }
+
+    async fn user(id: Uuid, context: &Context) -> FieldResult<User> {
+        context.user_repository().get(id).await.map_err(|e| e.into())
     }
 
     async fn users(context: &Context) -> FieldResult<Vec<User>> {
