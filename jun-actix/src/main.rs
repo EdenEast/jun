@@ -1,8 +1,19 @@
 use actix_web::{middleware, web, App, HttpResponse, HttpServer};
-use jun::graphql::{
-    create_schema, http::graphiql::graphiql_source, http::GraphQLRequest, Context, Schema,
+use jun::{
+    graphql::{
+        create_schema,
+        http::{graphiql::graphiql_source, GraphQLRequest},
+        Context, Schema,
+    },
+    hash::PasswordHasher,
 };
+use lazy_static::lazy_static;
 use log::info;
+
+lazy_static! {
+    static ref SERVER_SECRET_KEY: String =
+        std::env::var("SERVER_SECRET_KEY").expect("SERVER_SECRET_KEY is not part of env");
+}
 
 async fn handle_graphql(
     data: web::Json<GraphQLRequest>,
@@ -50,7 +61,9 @@ async fn main() -> std::io::Result<()> {
     let pool = jun::Pool::new(&database_url)
         .await
         .expect(&format!("failed to connect to database: {}", &database_url));
-    let context = Context::new(pool);
+
+    let hasher = PasswordHasher::new(&SERVER_SECRET_KEY);
+    let context = Context::new(pool, hasher);
 
     info!("Server starting at: {}", server_url);
 

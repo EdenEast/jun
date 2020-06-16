@@ -1,21 +1,20 @@
 use argonautica::{Hasher, Verifier};
 use futures::compat::Future01CompatExt;
 
+#[derive(Debug, Clone)]
 pub struct PasswordHasher {
-    secret: String,
+    secret: &'static str,
 }
 
 impl PasswordHasher {
-    pub fn new<S: Into<String>>(secret: S) -> Self {
-        Self {
-            secret: secret.into(),
-        }
+    pub fn new(secret: &'static str) -> Self {
+        Self { secret }
     }
 
     pub async fn encode(&self, plain: &str) -> String {
         Hasher::default()
             .with_password(plain)
-            .with_secret_key(&self.secret)
+            .with_secret_key(self.secret)
             .hash_non_blocking()
             .compat()
             .await
@@ -26,7 +25,7 @@ impl PasswordHasher {
         Verifier::default()
             .with_hash(hashed)
             .with_password(password)
-            .with_secret_key(&self.secret)
+            .with_secret_key(self.secret)
             .verify_non_blocking()
             .compat()
             .await

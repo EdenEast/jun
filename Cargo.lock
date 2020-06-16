@@ -1550,6 +1550,7 @@ dependencies = [
  "dotenv",
  "env_logger 0.7.1",
  "jun",
+ "lazy_static",
  "log",
 ]
 
@@ -1560,6 +1561,7 @@ dependencies = [
  "async-std",
  "dotenv",
  "jun",
+ "lazy_static",
  "log",
  "tide",
 ]

@@ -1,7 +1,8 @@
-use crate::models::User;
+use crate::hash::PasswordHasher;
+use crate::models::{AuthToken, CreateUser, User};
 use crate::repositories::UserRepository;
 use crate::Pool;
-use juniper::{EmptyMutation, EmptySubscription, FieldError, RootNode};
+use juniper::{EmptySubscription, FieldResult, RootNode};
 
 // re-exports
 pub use juniper::http;
@@ -10,14 +11,15 @@ pub use juniper::http;
 #[derive(Debug, Clone)]
 pub struct Context {
     pool: Pool,
+    pass_hasher: PasswordHasher,
 }
 
 // implement the marker trait for the Context
 impl juniper::Context for Context {}
 
 impl Context {
-    pub fn new(pool: Pool) -> Self {
-        Context { pool }
+    pub fn new(pool: Pool, pass_hasher: PasswordHasher) -> Self {
+        Context { pool, pass_hasher }
     }
 
     fn user_repository(&self) -> UserRepository {
@@ -33,16 +35,27 @@ impl Query {
         "1.0"
     }
 
-    async fn users(context: &Context) -> Result<Vec<User>, FieldError> {
-        let repository = context.user_repository();
-        let users = repository.all().await?;
-        Ok(users)
+    async fn users(context: &Context) -> FieldResult<Vec<User>> {
+        context.user_repository().all().await.map_err(|e| e.into())
+    }
+}
+
+pub struct Mutation {}
+
+#[juniper::graphql_object(Context = Context)]
+impl Mutation {
+    pub async fn create_user(input: CreateUser, context: &Context) -> FieldResult<AuthToken> {
+        context
+            .user_repository()
+            .create(input, &context.pass_hasher)
+            .await
+            .map_err(|e| e.into())
     }
 }
 
 pub type Schema =
-    RootNode<'static, Query, EmptyMutation<Context>, juniper::EmptySubscription<Context>>;
+    RootNode<'static, Query, Mutation, juniper::EmptySubscription<Context>>;
 
 pub fn create_schema() -> Schema {
-    Schema::new(Query {}, EmptyMutation::new(), EmptySubscription::new())
+    Schema::new(Query {}, Mutation {}, EmptySubscription::new())
 }

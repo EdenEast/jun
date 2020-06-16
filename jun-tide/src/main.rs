@@ -1,10 +1,15 @@
-use jun::graphql::{create_schema, http, Context, Schema};
-use jun::Pool;
-use tide::Body;
-use tide::Redirect;
-use tide::Server;
-use tide::StatusCode;
-use tide::{Request, Response};
+use jun::{
+    graphql::{create_schema, http, Context, Schema},
+    hash::PasswordHasher,
+    Pool,
+};
+use lazy_static::lazy_static;
+use tide::{Body, Redirect, Request, Response, Server, StatusCode};
+
+lazy_static! {
+    static ref SERVER_SECRET_KEY: String =
+        std::env::var("SERVER_SECRET_KEY").expect("SERVER_SECRET_KEY is not part of env");
+}
 
 pub struct State {
     pub context: Context,
@@ -14,7 +19,7 @@ pub struct State {
 impl State {
     pub fn new(pool: Pool) -> Self {
         Self {
-            context: Context::new(pool),
+            context: Context::new(pool, PasswordHasher::new(&SERVER_SECRET_KEY)),
             schema: create_schema(),
         }
     }

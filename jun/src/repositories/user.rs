@@ -1,9 +1,11 @@
 use uuid::Uuid;
 
-use crate::error::Error;
-use crate::hash::PasswordHasher;
-use crate::models::{AuthToken, CreateUser, User};
-use crate::Pool;
+use crate::{
+    error::Error,
+    hash::PasswordHasher,
+    models::{AuthToken, CreateUser, User},
+    Pool,
+};
 
 pub struct UserRepository {
     pool: Pool,
